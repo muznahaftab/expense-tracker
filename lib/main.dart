@@ -20,15 +20,15 @@ class _HomeState extends State<Home> {
   //   myController.dispose();
   //   super.dispose();
   // }
-
+  String s1, s2;
   Map<int, List<String>> options = {
-    0: ['\$30', 'Shoes'],
-    1: ['\$20', 'Groceries'],
-    2: ['\$20', 'Travel'],
-    3: ['\$15', 'Bag'],
-    4: ['\$12', 'Books'],
-    5: ['\$6', 'Movie'],
-    6: ['\$5', 'Snacks'],
+    0: ['\₹30', 'Shoes'],
+    1: ['\₹20', 'Groceries'],
+    2: ['\₹20', 'Travel'],
+    3: ['\₹15', 'Bag'],
+    4: ['\₹12', 'Books'],
+    5: ['\₹6', 'Movie'],
+    6: ['\₹5', 'Snacks'],
   };
 
   Widget items(String str1, String str2) {
@@ -88,6 +88,9 @@ class _HomeState extends State<Home> {
                   border: OutlineInputBorder(),
                   labelText: 'Add item',
                 ),
+                onSubmitted: (String s) {
+                  s2 = s;
+                },
               ),
             ),
             Padding(
@@ -98,13 +101,22 @@ class _HomeState extends State<Home> {
                   border: OutlineInputBorder(),
                   labelText: 'Price',
                 ),
+                onSubmitted: (String s) {
+                  s1 = s;
+                },
               ),
             ),
             RaisedButton(
               textColor: Colors.white,
               color: Colors.blue,
               child: Text('Add'),
-              onPressed: () {},
+              onPressed: () {
+                options[i] = ['₹' + s1, s2];
+                i++;
+                setState(() {});
+                nameController.clear();
+                priceController.clear();
+              },
             ),
           ],
         ),
