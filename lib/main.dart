@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(home: Home()));
+  runApp(
+    MaterialApp(debugShowCheckedModeBanner: false, home: Home()),
+  );
 }
 
 class Home extends StatefulWidget {
@@ -9,46 +11,43 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-int i = 7;
+int i = 6;
 
 class _HomeState extends State<Home> {
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  // @override
-  // void dispose() {
-  //   // Clean up the controller when the widget is disposed.
-  //   myController.dispose();
-  //   super.dispose();
-  // }
   String s1, s2;
   Map<int, List<String>> options = {
-    0: ['\₹30', 'Shoes'],
-    1: ['\₹20', 'Groceries'],
-    2: ['\₹20', 'Travel'],
-    3: ['\₹15', 'Bag'],
-    4: ['\₹12', 'Books'],
-    5: ['\₹6', 'Movie'],
-    6: ['\₹5', 'Snacks'],
+    0: ['\₹1200', 'Shoes'],
+    1: ['\₹500', 'Groceries'],
+    2: ['\₹2000', 'Travel'],
+    3: ['\₹1000', 'Books'],
+    4: ['\₹350', 'Movie'],
+    5: ['\₹200', 'Snacks'],
   };
 
   Widget items(String str1, String str2) {
     return Card(
-      margin: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+      margin: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: <Widget>[
-            Text(str1,
-                style: TextStyle(
-                  fontSize: 28.0,
-                  color: Colors.red[300],
-                )),
+            Text(
+              str1,
+              style: TextStyle(
+                fontSize: 28.0,
+                color: Colors.red[300],
+              ),
+            ),
             SizedBox(width: 50),
-            Text(str2,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.purple[600],
-                )),
+            Text(
+              str2,
+              style: TextStyle(
+                fontSize: 18.0,
+                color: Colors.purple[600],
+              ),
+            ),
           ],
         ),
       ),
@@ -71,7 +70,7 @@ class _HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                margin: EdgeInsets.fromLTRB(16.0, 32.0, 16.0, 16.0),
+                margin: EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 0.0),
                 child: Text('My expenses',
                     style: TextStyle(
                       fontSize: 18.0,
@@ -91,6 +90,7 @@ class _HomeState extends State<Home> {
                 onSubmitted: (String s) {
                   s2 = s;
                 },
+                textInputAction: TextInputAction.next,
               ),
             ),
             Padding(
@@ -103,6 +103,15 @@ class _HomeState extends State<Home> {
                 ),
                 onSubmitted: (String s) {
                   s1 = s;
+                  if (s1.isNotEmpty && s2.isNotEmpty) {
+                    setState(() {
+                      options[i] = ['₹' + s1, s2];
+                      i++;
+                      s1 = s2 = "";
+                      nameController.clear();
+                      priceController.clear();
+                    });
+                  }
                 },
               ),
             ),
@@ -111,11 +120,15 @@ class _HomeState extends State<Home> {
               color: Colors.blue,
               child: Text('Add'),
               onPressed: () {
-                options[i] = ['₹' + s1, s2];
-                i++;
-                setState(() {});
-                nameController.clear();
-                priceController.clear();
+                if (s1.isNotEmpty && s2.isNotEmpty) {
+                  setState(() {
+                    options[i] = ['₹' + s1, s2];
+                    i++;
+                    s1 = s2 = "";
+                    nameController.clear();
+                    priceController.clear();
+                  });
+                }
               },
             ),
           ],
