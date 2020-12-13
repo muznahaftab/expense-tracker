@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(
@@ -11,52 +12,66 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-int i = 6;
-
 class _HomeState extends State<Home> {
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   String s1, s2;
-  Map<int, List<String>> options = {
-    0: ['\₹1200', 'Shoes'],
-    1: ['\₹500', 'Groceries'],
-    2: ['\₹2000', 'Travel'],
-    3: ['\₹1000', 'Books'],
-    4: ['\₹350', 'Movie'],
-    5: ['\₹200', 'Snacks'],
-  };
+  List<String> myList = [];
+  SharedPreferences prefs;
 
-  Widget items(String str1, String str2) {
-    return Card(
-      margin: EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
+  @override
+  void initState() {
+    initSharedPrefs();
+    super.initState();
+  }
+
+  initSharedPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    loadData();
+  }
+
+  void saveData() {
+    prefs.setStringList('list', myList);
+  }
+
+  void loadData() {
+    myList = prefs.getStringList('list');
+    setState(() {});
+  }
+
+  Widget items(String str) {
+    return Center(
+      child: Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Text(
-              str1,
-              style: TextStyle(
-                fontSize: 28.0,
-                color: Colors.red[300],
-              ),
-            ),
-            SizedBox(width: 50),
-            Text(
-              str2,
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.purple[600],
-              ),
-            ),
+            ListTile(
+                title: Text(
+                  str,
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Colors.purple[600],
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete),
+                  color: Colors.redAccent[700],
+                  onPressed: () {
+                    setState(() {
+                      myList.remove(str);
+                      saveData();
+                    });
+                  },
+                )),
           ],
         ),
       ),
+      // ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // SingleChildScrollView()
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
@@ -67,18 +82,7 @@ class _HomeState extends State<Home> {
         child: ListView(
           scrollDirection: Axis.vertical,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                margin: EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 0.0),
-                child: Text('My expenses',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                    )),
-              ),
-            ),
-            for (int i = 0; i < options.length; i++)
-              items(options[i][0], options[i][1]),
+            for (int i = 0; i < myList.length; i++) items(myList[i]),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
@@ -105,8 +109,9 @@ class _HomeState extends State<Home> {
                   s1 = s;
                   if (s1.isNotEmpty && s2.isNotEmpty) {
                     setState(() {
-                      options[i] = ['₹' + s1, s2];
-                      i++;
+                      String str = "₹" + s1 + " " + s2;
+                      myList.add(str);
+                      saveData();
                       s1 = s2 = "";
                       nameController.clear();
                       priceController.clear();
@@ -120,10 +125,13 @@ class _HomeState extends State<Home> {
               color: Colors.blue,
               child: Text('Add'),
               onPressed: () {
+                if (s2.isEmpty) s2 = nameController.text.toString();
+                if (s1.isEmpty) s1 = priceController.text.toString();
                 if (s1.isNotEmpty && s2.isNotEmpty) {
                   setState(() {
-                    options[i] = ['₹' + s1, s2];
-                    i++;
+                    String str = "₹" + s1 + " " + s2;
+                    myList.add(str);
+                    saveData();
                     s1 = s2 = "";
                     nameController.clear();
                     priceController.clear();
@@ -135,6 +143,5 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-    // This trailing comma makes auto-formatting nicer for build methods.
   }
 }
